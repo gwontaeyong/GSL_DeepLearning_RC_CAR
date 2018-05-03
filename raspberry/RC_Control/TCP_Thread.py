@@ -28,7 +28,7 @@ class TCP_Thread(threading.Thread):
 
             # 명령 받기
             while self.flag:
-                                
+
                 response = self.client_socket.recv(256).decode()
 
                 if response:
@@ -39,3 +39,5 @@ class TCP_Thread(threading.Thread):
 
     def __del__(self):
         print("소켓 스레드 종료")
+
+# github test
