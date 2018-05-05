@@ -1,0 +1,10 @@
+diff a/raspberry/RC_Control/TCP_Thread.py b/raspberry/RC_Control/TCP_Thread.py	(rejected hunks)
+@@ -38,4 +38,6 @@
+             print("서버에 연결 할 수 없습니다.")
+ 
+     def __del__(self):
+-        print("소켓 스레드 종료")
+\ No newline at end of file
++        print("소켓 스레드 종료")
++
++# github test
