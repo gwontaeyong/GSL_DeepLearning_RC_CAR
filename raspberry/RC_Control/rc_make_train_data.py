@@ -1,7 +1,10 @@
 import threading, time
-import socket
-import select
 import RPi.GPIO as gpi
+import picamera
+import argparse
+import sys, tty, termios, time, select
+
+from datetime import datetime
 
 
 class RC_car:
@@ -15,13 +18,12 @@ class RC_car:
         self.right = 9  # right value
         self.servo_pwm = 50  # servo pwm value
         self.servo_motor_pin = servo_pin
-    
+
         # dcmotor value
         self.speed = 0  # dutycycle -> 0 - >  60 ~ 80
-        self.max_speed = 70 #maxspeed
+        self.max_speed = 50 #maxspeed
         self.min_speed = 20 #차량이 움직일수 있는 최소 dutycycle
-        self.rate = 2
-        self.dc_pwm = 20  # DCmotor pwm
+        self.dc_pwm = 15  # DCmotor pwm
         self.dc_motor_pin1 = motor_pin1
         self.dc_motor_pin2 = motor_pin2
 
@@ -43,33 +45,22 @@ class RC_car:
 
     def doing_cmd(self, cmd):
 
-        if cmd == 'u':
+        if cmd == '8':
             self.speed_up()
-        elif cmd == 'd':
+        elif cmd == '5':
             self.speed_down()
-        elif cmd == 'l':
+        elif cmd == '4':
             self.turn_left()
-        elif cmd == 'r':
+        elif cmd == '6':
             self.turn_right()
-        elif cmd == 'ul':
-            self.speed_up()
-            self.turn_left()
-        elif cmd == 'ur':
-            self.speed_up()
-            self.turn_right()
-        elif cmd == 'dl':
-            self.speed_down()
-            self.turn_left()
-        elif cmd == 'dr':
-            self.speed_down()
-            self.turn_right()
-        elif cmd == 'stop':
+        else:
+            print("else")
             self.angle = self.center
             self.speed = 0
             self.servo.ChangeDutyCycle(self.angle)
             self.motor.ChangeDutyCycle(self.speed)
 
-    # 좌회전
+    # left_
     def turn_left(self):
         if (self.angle <= self.left):
             self.angle = self.left
@@ -77,24 +68,25 @@ class RC_car:
             self.angle -= 0.5
         self.servo.ChangeDutyCycle(self.angle)
 
-    # 우회전
+    # right_
     def turn_right(self):
         if(self.angle >= self.right):
             self.angle = self.right
         else:
             self.angle += 0.5
-        self.servo.ChangeDutyCycle(self.angle)
+        self.servo.ChangeDutyCycle(self.angle)        
 
-    # 중앙 정렬
+    # straight
     def turn_center(self):
         self.angle = self.center
         self.servo.ChangeDutyCycle(self.angle)
 
+    
     def speed_up(self):
         if self.speed == 0:
             self.speed = self.min_speed
         elif self.speed >= self.min_speed and self.speed < self.max_speed:
-            self.speed += self.rate
+            self.speed += 5
         elif self.speed >= self.max_speed:
             self.speed = self.max_speed
         self.motor.ChangeDutyCycle(self.speed)
@@ -103,104 +95,107 @@ class RC_car:
         if self.speed <= self.min_speed:
             self.speed = 0
         elif self.speed > self.min_speed and self.speed <= self.max_speed:
-            self.speed -= self.rate
+            self.speed -= 5
         self.motor.ChangeDutyCycle(self.speed)
 
     def __del__(self):
         print("DC Motor del")
-       
+        
 
-
-
+#capture class
+class Capture(threading.Thread):
+    def __init__(self,path, time ):
+        super(Capture, self).__init__()
+        global rc_car
+        self.camera = picamera.PiCamera()
+        self.camera.rotation = 180
+        self.camera.resolution = (320, 240)
+        self.pause_time = time
+        self.path = path
+    def run(self):
+        while True:
+            #print("speed : ", rc_car.speed, "direct : ", rc_car.angle)
+            self.camera.capture(self.path)
+            time.sleep(self.pause_time)
+            
+#show RC_CAR's status 
 class Panel_Thread(threading.Thread):
+
     def __init__(self):
         super(Panel_Thread, self).__init__()
-        print("Panel_Thread start")
         global rc_car
+        print("Panel_Thread start")
 
     def run(self):
         while True:
             print("speed : ", rc_car.speed, "direct : ", rc_car.angle)
-            # time.sleep(1)
+            time.sleep(1)
 
     def __del__(self):
         print('판넬 종료')
 
-   
+#get commend
+def getch():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
-class TCP_Thread(threading.Thread):
-    global rc_car
-    global key
-    global panel
+    return ch
 
-    def __init__(self, host, port):
-        super(TCP_Thread, self).__init__()
-        self._stop_event = threading.Event()
-        self.host = host
-        self.port = port
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TCP 소켓 생성
-       
+if __name__ == "__main__":
+    
+    #get parameter
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-path', type=str)
+    FLAGS, _ = parser.parse_known_args()
 
-    def run(self):
+    path = FLAGS.path
 
-        try:
-            # 서버로 연결
-            self.client_socket.connect((self.host, self.port))
-            print("connected")
+    #set GPIO pin for DC, Servo Motor
+    dc_motor_pin1 = 19  # DC모터 pwm 사용 pin
+    dc_motor_pin2 = 26  # DC모터 pin2
+    servo_pin1 = 18  # 서보모터
 
-            # 명령 받기
-            while True:                                
-                ready = select.select([self.client_socket], [], [], 0.5)
+    #make RC_CAR object
+    rc_car = RC_car(dc_motor_pin1, dc_motor_pin2, servo_pin1)  # RC카 핀, pwm, speed, direct 를 가진 클래스
 
-                if ready[0]:
-                    response = self.client_socket.recv(256).decode()
-                else:
-                    response = 'stop'
+    #make Thread panel, camera
+    panel = Panel_Thread()  
+    camera = Capture(path, 1)
+
+    panel.daemon = True
+    camera.daemon = True
+
+    #get command from keyboard
+    # 8 : speed_up 
+    # 5 : speed_down 
+    # 4 : left
+    # 6 : right
+    try:
+        panel.start()
+        camera.start()
+
+        while True:
+        
+            char = getch()   
+            
+            rc_car.doing_cmd(char)
                     
-                threading.Thread(target=rc_car.doing_cmd, args=(response,)).start()
+            if(char == "x"):
+                print("Program Ended")
+                break
+    
+    except Exception as e:
+        print("에러 발생")
+        print(e)
 
-        except ConnectionRefusedError:
-            print("서버에 연결 할 수 없습니다.")
+    except KeyboardInterrupt:
+        print("종료합니다.")
 
-    def __del__(self):
-        print("소켓 스레드 종료")
-        self.client_socket.close()
-
-
-key = 'g'
-dc_motor_pin1 = 19  # DC모터 pwm 사용 pin
-dc_motor_pin2 = 26  # DC모터 pin2
-servo_pin1 = 18  # 서보모터
-
-
-host = '192.168.0.37'  # 서버 주소
-port = 8001  # 서버 연겨 포트
-
-rc_car = RC_car(dc_motor_pin1, dc_motor_pin2, servo_pin1)  # RC카 핀, pwm, speed, direct 를 가진 클래스
-
-panel = Panel_Thread()  # RC카의 속도, 방향을 출력해주는 쓰레드
-panel.daemon = True
-tcp_thread = TCP_Thread(host, port)
-tcp_thread.daemon = True
-
-try:
-    tcp_thread.start()
-    panel.start()
-
-    while True:
-        if key == 'q':
-            break
-
-except ConnectionResetError:
-    print("클라이언트가 연결을 종료 하였습니다.")
-
-except KeyboardInterrupt:
-    print("종료합니다.")
-
-finally:
-    print("finally")
-    rc_car.motor.stop()
-    gpi.cleanup()
-    tcp_thread.client_socket.close()
-
-
+    finally:
+        print("finally")
+        
