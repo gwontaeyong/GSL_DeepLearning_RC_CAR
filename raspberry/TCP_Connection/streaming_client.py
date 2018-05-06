@@ -25,18 +25,16 @@ try:
         start = time.time()
         stream = io.BytesIO()
         
-        #print("start")
+        print("start")
         # send jpeg format video stream
         for foo in camera.capture_continuous(stream, 'jpeg', use_video_port = True):
             connection.write(struct.pack('<L', stream.tell()))
             connection.flush()
             stream.seek(0)
             connection.write(stream.read())
-            if time.time() - start > 600:
-                break
             stream.seek(0)
             stream.truncate()
-        #print("end")
+        print("end")
     connection.write(struct.pack('<L', 0))
 except KeyboardInterrupt:
     print("종료합니다.")

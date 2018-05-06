@@ -17,10 +17,10 @@ try:
     while True:
         pwm = float(input("input"))
         servo.ChangeDutyCycle(pwm)
-#finally:
-#    print("end")
-
-#    servo.stop()
+        if pwm == 0:
+            break
 finally:
+    servo.stop()
     gpi.cleanup()
+
 #	sys.exit()

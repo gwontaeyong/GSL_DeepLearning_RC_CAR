@@ -8,7 +8,7 @@ import numpy as np
 # Start a socket listening for connections on 0.0.0.0:8000 (0.0.0.0 means
 # all interfaces)
 server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', 8000))
+server_socket.bind(('0.0.0.0', 8001))
 server_socket.listen(0)
 
 # Accept a single connection and make a file-like object out of it
@@ -28,9 +28,7 @@ try:
         # processing on it
         image_stream.seek(0)
         image = Image.open(image_stream)
-        print('Image is %dx%d' % image.size)
         image.verify()
-        print('Image is verified')
         data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
         cv_image = cv.imdecode(data,1)
         cv.imshow('stream_image', cv_image)

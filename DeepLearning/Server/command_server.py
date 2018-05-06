@@ -2,15 +2,14 @@ import socket
 import sys
 import keyboard
 import argparse
+import threading
 
-def send_commend(*arg):
+def send_commend(conn):
+    while True:
+        data = conn.recv(7).decode()
+        if data:
+            print(data)
 
-    data = ""
-    for code in arg:
-        data += code
-
-    print(data)
-    conn.send(data.encode())
 
 
 if __name__ == "__main__":
@@ -34,18 +33,13 @@ if __name__ == "__main__":
     conn, addr = mySocket.accept()
     print("Connection from: " + str(addr))
 
-    keyboard.add_hotkey('up', send_commend, args=('u'))
-    keyboard.add_hotkey('down', send_commend, args=('d'))
-    keyboard.add_hotkey('left', send_commend, args=('l'))
-    keyboard.add_hotkey('right', send_commend, args=('r'))
+    thread_rcvmsg = threading.Thread(target=send_commend(conn))
+    thread_rcvmsg.start()
+    print("Test")
 
-    '''
-    keyboard.add_hotkey('up+left', send_commend, args=('ul'))
-    keyboard.add_hotkey('up+right', send_commend, args=('ur'))
-    keyboard.add_hotkey('down+left', send_commend, args=('dl'))
-    keyboard.add_hotkey('down+right', send_commend, args=('dr'))
-    '''
-    keyboard.wait()
+    while True:
+        data = "test"
+        conn.send(data.encode())
 
     conn.close()
 
