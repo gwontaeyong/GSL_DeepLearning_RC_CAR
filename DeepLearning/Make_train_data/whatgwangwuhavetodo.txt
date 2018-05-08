@@ -1,0 +1,2 @@
+1. make csv file
+2. read csv file and make x, y data
