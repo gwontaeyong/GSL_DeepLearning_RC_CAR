@@ -5,14 +5,18 @@ from PIL import Image
 import cv2 as cv
 import numpy as np
 import threading
+import socket
+
+from PyQt5.QtGui import *
 
 class StreamServer(threading.Thread):
-    def __init__(self, host, port):
+
+    def __init__(self, host, port, my_dialog):
         super(StreamServer, self).__init__()
         print("Stream_server_Start")
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
-
+        self.my_dialog = my_dialog
         # Accept a single connection and make a file-like object out of it
 
 
@@ -38,7 +42,12 @@ class StreamServer(threading.Thread):
                 image.verify()
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 cv_image = cv.imdecode(data,1)
-                cv.imshow('stream_image', cv_image)
+
+                t = threading.Thread(target=self.change_label_image, args=(self.my_dialog.image_label,cv_image))
+                t.start()
+
+                #cv.imshow('stream_image', cv_image)
+
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     break
         finally:
@@ -47,3 +56,13 @@ class StreamServer(threading.Thread):
 
     def __del__(self):
         print("server is close")
+
+    def change_label_image(self, label, opencv_image):
+        cv.cvtColor(opencv_image, cv.COLOR_BGR2RGB, opencv_image)
+        height, width, byteValue = opencv_image.shape
+        byteValue = byteValue * width
+        image_ = QImage(opencv_image, width, height, byteValue, QImage.Format_RGB888)
+        pix = QPixmap(image_)
+        label.setPixmap(pix)
+
+
