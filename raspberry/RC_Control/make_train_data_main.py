@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     #make Thread panel, camera
     panel = Panel_Thread(rc_car)  
-    camera = Capture(path, 1, rc_car)
+    camera = Capture(path, 0.5, rc_car)
 
     #get command from keyboard
     # 8 : speed_up 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
         while True:
             char = getch()   
             rc_car.doing_cmd(char) 
+            
             if(char == "x"):
                 print("Program Ended")
                 del rc_car

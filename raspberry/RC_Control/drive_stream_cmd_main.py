@@ -24,9 +24,11 @@ if __name__ == "__main__":
     #get parameter
     parser = argparse.ArgumentParser()
     #Streaming host, port
-    parser.add_argument('-shost', type=str, default="192.168.0.37")
+
+    default_host = "192.168.0.131"
+    parser.add_argument('-shost', type=str, default=default_host)
     parser.add_argument('-sp', type=int, default="8002")
-    parser.add_argument('-chost', type=str, default="192.168.0.37")
+    parser.add_argument('-chost', type=str, default=default_host)
     parser.add_argument('-cp', type=int, default="8001")
     FLAGS, _ = parser.parse_known_args()
 
@@ -34,7 +36,6 @@ if __name__ == "__main__":
     sport = FLAGS.sp
     chost = FLAGS.chost
     cport = FLAGS.cp
-
 
     #set GPIO pin for DC, Servo Motor
     dc_motor_pin1 = 19  # DC모터 pwm 사용 pin
