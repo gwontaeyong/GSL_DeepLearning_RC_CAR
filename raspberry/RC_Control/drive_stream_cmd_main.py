@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     #Streaming host, port
 
-    default_host = "192.168.0.131"
+    default_host = "192.168.0.37"
     parser.add_argument('-shost', type=str, default=default_host)
     parser.add_argument('-sp', type=int, default="8002")
     parser.add_argument('-chost', type=str, default=default_host)
