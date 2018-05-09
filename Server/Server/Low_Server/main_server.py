@@ -1,8 +1,8 @@
 import argparse
 import socket
 
-from Low_Server.stream_server_thread import StreamServer
-from Low_Server.command_server_thread import CmdServer
+from Server.Low_Server.stream_server_thread import StreamServer
+from Server.Low_Server.command_server_thread import CmdServer
 
 if __name__ == "__main__":
     #호스트, 포트 번호 선언
