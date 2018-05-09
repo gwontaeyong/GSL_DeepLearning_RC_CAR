@@ -30,7 +30,7 @@ Plat : Pooling한 데이터를 [120 * 160 * 4, 3] 크기로  일차원화 한다
 #X데이터와 Y데이터를 담을 placeholder
 X = tf.placeholder(tf.float32, shape=[None, 240, 320, 1])
 Y_Lable = tf.placeholder(tf.float32, [None,3])
-
+#
 #Y data
 Y_data = [[1,0,0],
           [0,0,1],
@@ -48,13 +48,18 @@ X_data = []
 이미지를 읽어 shape를 변형하고 이를 X_data배열에 넣는다.
 
 left, right, straight 데이터를 넣는다.
-
 '''
 
 #left 데이터
 image_data = cv.imread('left.jpg',cv.IMREAD_GRAYSCALE) #read_Image
+'''
+이미지 절반으로 자르기
+
+'''
 reshape_image_data = np.reshape(image_data, [240,320,1])
 X_data.append(reshape_image_data)
+
+print(reshape_image_data)
 
 #right 데이터
 image_data = cv.imread('right.jpg',cv.IMREAD_GRAYSCALE) #read_Image
