@@ -11,12 +11,12 @@ from PyQt5.QtGui import *
 
 class StreamServer(threading.Thread):
 
-    def __init__(self, host, port, my_dialog):
+    def __init__(self, host, port, label):
         super(StreamServer, self).__init__()
         print("Stream_server_Start")
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
-        self.my_dialog = my_dialog
+        self.label = label
         # Accept a single connection and make a file-like object out of it
 
 
@@ -42,9 +42,9 @@ class StreamServer(threading.Thread):
                 image.verify()
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 cv_image = cv.imdecode(data,1)
-
-                t = threading.Thread(target=self.change_label_image, args=(self.my_dialog.image_label,cv_image))
-                t.start()
+                #self.change_label_image(self.label, cv_image)
+                #t = threading.Thread(target=self.change_label_image, args=(self.my_dialog.image_label,cv_image))
+                #t.start()
 
                 #cv.imshow('stream_image', cv_image)
 
