@@ -1,5 +1,3 @@
 Server/.idea
-Server/GUI_Interface
-Server/GUI_Server
 Server/Low_Server/__pycache__
 raspberry/RC_Control/__pycache__

@@ -1,22 +1,23 @@
 import io
-import socket
 import struct
 from PIL import Image
 import cv2 as cv
 import numpy as np
-import threading
 import socket
 
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QThread, pyqtSignal,Qt
+from PyQt5.QtGui import QImage
 
-class StreamServer(threading.Thread):
+class StreamServer(QThread):
 
-    def __init__(self, host, port, label):
-        super(StreamServer, self).__init__()
+    changePixmap = pyqtSignal(QImage)
+
+    def __init__(self, host, port):
+        super().__init__()
         print("Stream_server_Start")
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
-        self.label = label
+
         # Accept a single connection and make a file-like object out of it
 
 
@@ -42,9 +43,11 @@ class StreamServer(threading.Thread):
                 image.verify()
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
                 cv_image = cv.imdecode(data,1)
-                #self.change_label_image(self.label, cv_image)
-                #t = threading.Thread(target=self.change_label_image, args=(self.my_dialog.image_label,cv_image))
-                #t.start()
+
+                cv.cvtColor(cv_image, cv.COLOR_BGR2RGB, cv_image)
+                qt_image = QImage(cv_image.data, cv_image.shape[1], cv_image.shape[0], QImage.Format_RGB888)
+                p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
+                self.changePixmap.emit(p)
 
                 #cv.imshow('stream_image', cv_image)
 
@@ -56,13 +59,4 @@ class StreamServer(threading.Thread):
 
     def __del__(self):
         print("server is close")
-
-    def change_label_image(self, label, opencv_image):
-        cv.cvtColor(opencv_image, cv.COLOR_BGR2RGB, opencv_image)
-        height, width, byteValue = opencv_image.shape
-        byteValue = byteValue * width
-        image_ = QImage(opencv_image, width, height, byteValue, QImage.Format_RGB888)
-        pix = QPixmap(image_)
-        label.setPixmap(pix)
-
-
+        self.wait()

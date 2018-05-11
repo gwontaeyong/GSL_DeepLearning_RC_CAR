@@ -1,18 +1,22 @@
 import socket
-import threading
+from PyQt5.QtCore import QThread, pyqtSignal
 
+class CmdServer(QThread):
 
-class CmdServer(threading.Thread):
-    def __init__(self, host, port, labels):
-        super(CmdServer, self).__init__()
+    change_speed_label = pyqtSignal(int, str)
+    change_steering_label = pyqtSignal(int, str)
+
+    def __init__(self, host, port):
+        super().__init__()
+
         self.cmd_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (host, port)
         self.buf_size = 3
         self.flag = True
         self.cmd_server.bind(server_address)
         self.cmd_server.listen(1)
-        self.labels = labels
-        self.ex_index = 4
+        self.ex_steering = 4
+        self.ex_speed = 0
 
     def run(self):
         print("waiting cmd_client")
@@ -30,24 +34,13 @@ class CmdServer(threading.Thread):
             if not reply:
                 break
             else:
-                self.repaint_steering_labels(int(str(reply.decode()).split("_")[0]), "green")
-
-    def repaint_steering_labels(self, index, color):
-        print("index ", index)
-        if index != self.ex_index:
-            self.labels[self.ex_index].setStyleSheet('QLabel { '
-                                                     'background-color:white;'
-                                                     '}')
-
-            self.labels[index].setStyleSheet('QLabel { '
-                                                'background-color:' + color + ';'
-                                                '}')
-        self.ex_index = index
+                data = str(reply.decode()).split("_")
+                steering_index = int(data[0])
+                speed_index = int(data[1])
+                self.change_steering_label.emit(steering_index, "green")
+                self.change_speed_label.emit(speed_index, "green")
 
     def __del__(self):
         print("cmd_server is close")
+        self.wait()
 
-
-if __name__ == "__main__":
-    cmd_server = CmdServer("", 8001)
-    cmd_server.start()
