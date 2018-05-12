@@ -27,6 +27,6 @@ def search(dirname):
                     wr.writerow([full_filename,angle,speed])
     except PermissionError:
         pass
-search("d:/DeepLearning/")          # 입력값 이미지있는 폴더 주소
+search("d:/DeepLearning/")          # 전역변수 <-- 이미지있는 상위 폴더 주소
                                     # Tools - Preferences - current working directory 값 잡아준대에 csv파일 저장됨.
 f.close()
