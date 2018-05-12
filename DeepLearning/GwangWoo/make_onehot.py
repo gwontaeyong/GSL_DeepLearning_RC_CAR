@@ -10,7 +10,6 @@ import csv
 f = open('output.csv', 'r')
 rdr = csv.reader(f)
 y_data = []
-y_data.append([0,1])
 for line in rdr:
     addr = line[0]
     angle = line[1]
