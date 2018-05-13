@@ -17,17 +17,23 @@ for line in rdr:
     #print(type(angle))
     #print(addr,angle,speed)
     if angle == '0':
-        y_data.append([1,0,0,0,0,0])
+        y_data.append([1,0,0,0,0,0,0,0,0])
     elif angle == '1':
-        y_data.append([0,1,0,0,0,0])
+        y_data.append([0,1,0,0,0,0,0,0,0])
     elif angle == '2':
-        y_data.append([0,0,1,0,0,0])
+        y_data.append([0,0,1,0,0,0,0,0,0])
     elif angle == '3':
-        y_data.append([0,0,0,1,0,0])
+        y_data.append([0,0,0,1,0,0,0,0,0])
     elif angle == '4':
-        y_data.append([0,0,0,0,1,0])
+        y_data.append([0,0,0,0,1,0,0,0,0])
     elif angle == '5':
-        y_data.append([0,0,0,0,0,1])
+        y_data.append([0,0,0,0,0,1,0,0,0])
+    elif angle == '6':
+        y_data.append([0,0,0,0,0,0,1,0,0])
+    elif angle == '7':
+        y_data.append([0,0,0,0,0,0,0,1,0])
+    elif angle == '8':
+        y_data.append([0,0,0,0,0,0,0,0,1])
     
 f.close()
 
