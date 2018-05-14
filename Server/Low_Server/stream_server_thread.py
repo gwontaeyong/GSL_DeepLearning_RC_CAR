@@ -5,11 +5,11 @@ import cv2 as cv
 import numpy as np
 import socket
 
-from PyQt5.QtCore import QThread, pyqtSignal,Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtGui import QImage
+from datetime import datetime
 
 class StreamServer(QThread):
-
     changePixmap = pyqtSignal(QImage)
 
     def __init__(self, host, port):
@@ -17,9 +17,6 @@ class StreamServer(QThread):
         print("Stream_server_Start")
         self.server_socket = socket.socket()
         self.server_socket.bind((host, port))
-
-        # Accept a single connection and make a file-like object out of it
-
 
     def run(self):
         try:
@@ -41,15 +38,13 @@ class StreamServer(QThread):
                 image_stream.seek(0)
                 image = Image.open(image_stream)
                 image.verify()
-                data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
-                cv_image = cv.imdecode(data,1)
 
+                data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
+                cv_image = cv.imdecode(data, 1)
                 cv.cvtColor(cv_image, cv.COLOR_BGR2RGB, cv_image)
                 qt_image = QImage(cv_image.data, cv_image.shape[1], cv_image.shape[0], QImage.Format_RGB888)
                 p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
                 self.changePixmap.emit(p)
-
-                #cv.imshow('stream_image', cv_image)
 
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     break
