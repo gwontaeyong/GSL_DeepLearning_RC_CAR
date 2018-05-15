@@ -177,9 +177,9 @@ class Model:
         return self.sess.run([self.merged_summary, self.optimizer], feed_dict={self.X: x_data, self.Y: y_data, self.training : training})
 
 
-save_path = 'saved/sample4-1'
-load_path = 'saved/sample4-1-300'
-logs_path = "./logs/sample4-1"
+save_path = 'saved/sample4_1'
+load_path = 'saved/sample4_1-300'
+logs_path = "./logs/sample4_1"
 
 sess = tf.Session()
 m1 = Model(sess, "m1")
@@ -190,7 +190,7 @@ m1 = Model(sess, "m1")
 sess.run(tf.global_variables_initializer())
 s = 0
 # m1.saver.restore(sess, load_path)
-# s = int(load_path[16:21])
+# s = int(load_path.split("-",[1]))
 
 print('Learning Started!')
 
