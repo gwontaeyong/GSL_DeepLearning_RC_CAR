@@ -113,7 +113,6 @@ w1 = tf.Variable(tf.truncated_normal(shape=[70 * 160 * 4, 6]))
 b1 = tf.Variable(tf.truncated_normal(shape=[6]))
 pool_flat = tf.reshape(pool1, [-1, 70 * 160 * 4])
 outputLayer = tf.matmul(pool_flat, w1) + b1
-print(outputLayer)
 
 # 최적화
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y_Lable, logits=outputLayer))
@@ -144,7 +143,7 @@ with tf.Session() as sess:
     # 커맨드창에서 실행 : tensorboard --logdir=파일경로
     # => 파일경로를 C드라이브 부터 주던지 or cmd에서 디렉토리 이동 후 logs_path의 경로를 주던지
     # 그 후 커맨드창에 나타난 url을 인터넷으로 접속 (http://127.0.0.1:6006)
-    logs_path = "./logs/sample00"
+    logs_path = "./logs/tb_test5"
     merged_summary = tf.summary.merge_all()
     writer = tf.summary.FileWriter(logs_path)
     writer.add_graph(sess.graph)
@@ -173,7 +172,7 @@ with tf.Session() as sess:
             # 학습 데이터 저장하기
             # saver.save(세션, 파일명, 스텝(생략가능))
             # ex) saved/ckpt_test-스텝 파일 생성
-            save_path = 'saved/sample00'
+            save_path = 'saved/ckpt_test2'
             saver.save(sess, save_path, global_step=step)
 
             print(sess.run(accuracy, feed_dict={X: X_data, Y_Lable: Y_data}))
