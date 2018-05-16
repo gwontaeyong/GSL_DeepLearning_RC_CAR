@@ -1,3 +1,5 @@
 Server/.idea
 Server/Low_Server/__pycache__
 raspberry/RC_Control/__pycache__
+DeepLearning/.idea
+Server/GUI_Interface/__pycache__

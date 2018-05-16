@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 import tensorflow as tf
 import os
+
 '''
 이미지 크기는 240 x 320 이다.
 이를 3장 입력하고
