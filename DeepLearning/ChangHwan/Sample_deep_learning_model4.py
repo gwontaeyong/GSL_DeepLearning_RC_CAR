@@ -57,6 +57,10 @@ Y_data = [[1, 0, 0, 0, 0, 0],
           ]
 
 input_X_data(X_data)
+learning_rate = 0.005
+save_path = 'saved/sample4_1'
+load_path = 'saved/sample4_1-300'
+logs_path = "./logs/sample4_1"
 
 
 class Model:
@@ -140,7 +144,7 @@ class Model:
 
         # 최적화
         self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.Y))
-        self.optimizer = tf.train.AdamOptimizer(0.005).minimize(self.cost)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(self.cost)
 
         #loss summary
         self.cost_summ = tf.summary.scalar("cost", self.cost)
@@ -177,9 +181,6 @@ class Model:
         return self.sess.run([self.merged_summary, self.optimizer], feed_dict={self.X: x_data, self.Y: y_data, self.training : training})
 
 
-save_path = 'saved/sample4_1'
-load_path = 'saved/sample4_1-300'
-logs_path = "./logs/sample4_1"
 
 sess = tf.Session()
 m1 = Model(sess, "m1")
