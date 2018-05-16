@@ -160,7 +160,7 @@ class Model:
         # 텐서보드
         # summary들을 merge 하고 파일 경로를 지정해준다
         # 세션의 그래프를 추가한다
-        # 커맨드창에서 실행 : tensorboard --logdir=파일경로
+        # 커맨드창에서 실행 : tensorboard --logdir=파일경로(따옴표없이)
         # => 파일경로를 C드라이브 부터 주던지 or cmd에서 디렉토리 이동 후 logs_path의 경로를 주던지
         # 그 후 커맨드창에 나타난 url을 인터넷으로 접속 (http://127.0.0.1:6006)
         self.merged_summary = tf.summary.merge_all()
@@ -190,11 +190,11 @@ m1 = Model(sess, "m1")
 sess.run(tf.global_variables_initializer())
 s = 0
 # m1.saver.restore(sess, load_path)
-# s = int(load_path.split("-",[1]))
+# s = int(load_path.split("-", [1]))
 
 print('Learning Started!')
 
-for step in range(s + 1, s + 2001):
+for step in range(s + 1, s + 10001):
 
     summary, _ = m1.train(X_data, Y_data)
     m1.writer.add_summary(summary, global_step=step)
