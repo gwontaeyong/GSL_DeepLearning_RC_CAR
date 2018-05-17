@@ -16,7 +16,10 @@ class Model:
 
         # X데이터와 Y데이터를 담을 placeholder
         self.X = tf.placeholder(tf.float32, [None, self.height * self.wedith])
-        self.Y = tf.placeholder(tf.int32, shape=[None, 1])
+        self.Y = tf.placeholder(tf.int32, shape=[None,1])
+
+        self.Y_one_hot = tf.one_hot(self.Y, self.nb_class)
+        self.Y_one_hot = tf.reshape(self.Y_one_hot, [-1, self.nb_class])
 
         self.training = tf.placeholder(tf.bool)
 
@@ -28,8 +31,6 @@ class Model:
             # 140 * 320 * 1 => 70 * 160 * 24
 
             X_img = tf.reshape(self.X, shape=[-1, self.height, self.wedith, 1])
-            Y_one_hot = tf.reshape(self.Y, [-1, self.nb_class])
-
             conv1 = tf.layers.conv2d(inputs=X_img, filters=24, kernel_size=[5, 5], padding="SAME",
                                      activation=tf.nn.relu)
             pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], padding="SAME", strides=2)
@@ -90,7 +91,7 @@ class Model:
             self.logits = tf.layers.dense(inputs=dropout9, units=self.nb_class)
 
         # 최적화
-        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=Y_one_hot))
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels= self.Y_one_hot))
         self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.cost)
 
         # loss summary

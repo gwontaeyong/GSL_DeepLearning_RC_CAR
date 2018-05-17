@@ -33,7 +33,7 @@ class InputData():
 
     def make_y_data(self, y_csv_data):
         y_steering_data = []
-        # tf.cast(y_csv_data, tf.int32)
+        tf.cast(y_csv_data, tf.int32)
         self.Y_data = y_csv_data.astype(np.int32)
         #self.Y_one_hot = tf.reshape(tf.one_hot(self.Y_data, 9), [-1, 9])
 
@@ -47,6 +47,7 @@ print(input_data.Y_data)
 save_path = 'saved/sample4_1'
 load_path = 'saved/sample4_1-300'
 
+print(input_data.Y_data)
 
 sess = tf.Session()
 
