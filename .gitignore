@@ -5,3 +5,6 @@ DeepLearning/.idea
 Server/GUI_Interface/__pycache__
 DeepLearning/Sample_Deep_learning
 DeepLearning/ChangHwan/.idea
+DeepLearning/ChangHwan/saved
+DeepLearning/ChangHwan/logs
+Server/DeepLearning/__pycache__
