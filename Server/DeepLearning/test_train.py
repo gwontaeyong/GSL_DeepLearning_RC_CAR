@@ -1,25 +1,24 @@
-from ndivia_model import *
-import csv
+from DeepLearning.ndivia_model import *
+
 import tensorflow as tf
-import csv
 import cv2 as cv
 import numpy as np
-import os
 
 
 class InputData():
     def __init__(self, csv_file_name):
         self.X_data = []
         self.Y_data = None
+        self.Y_one_hot = None
         self.read_csv_file(csv_file_name)
 
     def read_csv_file(self, file_name):
         xy = np.loadtxt(file_name, delimiter=',', dtype=str)
         x_address_data = xy[:, [0]]
-        y_csv_data = xy[:, [1]]
+        self.Y_data = xy[:, [1]]
         x_address_data = np.reshape(x_address_data, [-1])
         self.make_x_data(x_address_data)
-        self.make_y_data(y_csv_data)
+        self.make_y_data(self.Y_data)
 
     def im_trim(self, img):  # 함수로 만든다
         img_trim = img[100:240, 0:320]  # trim한 결과를 img_trim에 담는다
@@ -29,33 +28,30 @@ class InputData():
         for address in x_address:
             image_data = cv.imread(address, cv.IMREAD_GRAYSCALE)  # read_Image
             image_data = self.im_trim(image_data)
-            reshape_image_data = np.reshape(image_data, [140, 320, 1])
-            self.X_data.append(reshape_image_data)
+            #self.X_data.append(reshape_image_data)
+            self.X_data.append( np.reshape(image_data, [-1]))
 
     def make_y_data(self, y_csv_data):
         y_steering_data = []
-        tf.cast(y_csv_data, tf.float32)
-        self.Y_data = tf.reshape(tf.one_hot(y_csv_data, 9), [-1, 9])
+        # tf.cast(y_csv_data, tf.int32)
+        self.Y_data = y_csv_data.astype(np.int32)
+        #self.Y_one_hot = tf.reshape(tf.one_hot(self.Y_data, 9), [-1, 9])
 
 
 input_data = InputData("output.csv")
-sess = tf.Session()
 
-print(input_data.X_data)
-print(sess.run(input_data.Y_data))
-print(np.shape(sess.run(input_data.Y_data)))
+print(np.shape(input_data.Y_data))
 print(input_data.Y_data)
 
-Y = tf.placeholder(tf.float32, shape=[None, 9])
-print(Y)
+
 save_path = 'saved/sample4_1'
 load_path = 'saved/sample4_1-300'
 
-'''
+
 sess = tf.Session()
 
-
 m1 = Model(sess, "m1")
+
 
 # 저장된 학습 데이터 불러오기
 #  restore(세션, 파일경로)
@@ -83,4 +79,3 @@ for step in range(s + 1, s + 2001):
 
 print('Learning Finished!')
 print("Predict : ", m1.predict(input_data.X_data))
-'''
