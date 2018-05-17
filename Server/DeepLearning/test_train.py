@@ -1,4 +1,4 @@
-from DeepLearning.ndivia_model import *
+from ndivia_model import *
 
 import tensorflow as tf
 import cv2 as cv
@@ -9,7 +9,6 @@ class InputData():
     def __init__(self, csv_file_name):
         self.X_data = []
         self.Y_data = None
-        self.Y_one_hot = None
         self.read_csv_file(csv_file_name)
 
     def read_csv_file(self, file_name):
@@ -28,26 +27,21 @@ class InputData():
         for address in x_address:
             image_data = cv.imread(address, cv.IMREAD_GRAYSCALE)  # read_Image
             image_data = self.im_trim(image_data)
-            #self.X_data.append(reshape_image_data)
             self.X_data.append( np.reshape(image_data, [-1]))
 
     def make_y_data(self, y_csv_data):
-        y_steering_data = []
         tf.cast(y_csv_data, tf.int32)
         self.Y_data = y_csv_data.astype(np.int32)
-        #self.Y_one_hot = tf.reshape(tf.one_hot(self.Y_data, 9), [-1, 9])
+
 
 
 input_data = InputData("output.csv")
-
-print(np.shape(input_data.Y_data))
-print(input_data.Y_data)
 
 
 save_path = 'saved/sample4_1'
 load_path = 'saved/sample4_1-300'
 
-print(input_data.Y_data)
+
 
 sess = tf.Session()
 

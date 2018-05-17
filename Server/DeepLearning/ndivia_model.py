@@ -26,11 +26,13 @@ class Model:
         self._build_net()
 
     def _build_net(self):
+
         with tf.variable_scope(self.name):
             # Convolutional Layer #1
             # 140 * 320 * 1 => 70 * 160 * 24
 
             X_img = tf.reshape(self.X, shape=[-1, self.height, self.wedith, 1])
+
             conv1 = tf.layers.conv2d(inputs=X_img, filters=24, kernel_size=[5, 5], padding="SAME",
                                      activation=tf.nn.relu)
             pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], padding="SAME", strides=2)
@@ -71,24 +73,24 @@ class Model:
             dropout6 = tf.layers.dropout(inputs=conv6, rate=0.3, training=self.training)
 
             # FC Layer #1
-            # 3 * 8 * 64 = 1536 => 100
+            # 3 * 8 * 64 = 1536 => 600
             flat = tf.reshape(dropout6, [-1, 3 * 8 * 64])
-            dense7 = tf.layers.dense(inputs=flat, units=100, activation=tf.nn.relu)
+            dense7 = tf.layers.dense(inputs=flat, units=600, activation=tf.nn.relu)
             dropout7 = tf.layers.dropout(inputs=dense7, rate=0.5, training=self.training)
 
             # FC Layer #2
-            # 100 => 50
-            dense8 = tf.layers.dense(inputs=dropout7, units=50, activation=tf.nn.relu)
+            # 600 => 100
+            dense8 = tf.layers.dense(inputs=dropout7, units=100, activation=tf.nn.relu)
             dropout8 = tf.layers.dropout(inputs=dense8, rate=0.5, training=self.training)
 
             # FC Layer #3
             # 50 => 10
-            dense9 = tf.layers.dense(inputs=dropout8, units=10, activation=tf.nn.relu)
-            dropout9 = tf.layers.dropout(inputs=dense9, rate=0.5, training=self.training)
+            #dense9 = tf.layers.dense(inputs=dropout8, units=10, activation=tf.nn.relu)
+            #dropout9 = tf.layers.dropout(inputs=dense9, rate=0.5, training=self.training)
 
             # Y : 6가지
-            # 50 => 6
-            self.logits = tf.layers.dense(inputs=dropout9, units=self.nb_class)
+            # 100 => 6
+            self.logits = tf.layers.dense(inputs=dropout8, units=self.nb_class)
 
         # 최적화
         self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels= self.Y_one_hot))
