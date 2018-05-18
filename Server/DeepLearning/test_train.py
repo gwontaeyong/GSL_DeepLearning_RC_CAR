@@ -1,4 +1,4 @@
-from ndivia_model import *
+from DeepLearning.ndivia_model import *
 
 import tensorflow as tf
 import cv2 as cv
