@@ -1,10 +1,13 @@
 Server/.idea
 Server/Low_Server/__pycache__
 raspberry/RC_Control/__pycache__
-DeepLearning/.idea
+DeepLearning/.idea/*
 Server/GUI_Interface/__pycache__
 DeepLearning/Sample_Deep_learning
 DeepLearning/ChangHwan/.idea
 DeepLearning/ChangHwan/saved
 DeepLearning/ChangHwan/logs
 Server/DeepLearning/__pycache__
+Server/DeepLearning/.cache
+Server/DeepLearning/logs
+Server/Main/logs
