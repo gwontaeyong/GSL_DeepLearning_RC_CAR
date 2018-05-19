@@ -8,3 +8,6 @@ DeepLearning/ChangHwan/.idea
 DeepLearning/ChangHwan/saved
 DeepLearning/ChangHwan/logs
 Server/DeepLearning/__pycache__
+Server/DeepLearning/.cache
+Server/DeepLearning/logs
+Server/Main/logs
