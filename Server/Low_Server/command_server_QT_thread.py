@@ -1,12 +1,10 @@
 import socket
-import numpy as np
-import cv2 as cv
-import tensorflow as tf
-
+import threading
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtCore import pyqtSlot
 
 from DeepLearning.ndivia_model import *
+
 
 class CmdServer(QThread):
     change_rc_speed_label = pyqtSignal(int, str)
@@ -14,7 +12,7 @@ class CmdServer(QThread):
     change_predict_speed_label = pyqtSignal(int, str)
     change_predict_steering_label = pyqtSignal(int, str)
 
-    def __init__(self, host, port, model):
+    def __init__(self, host, port, model=None):
         super().__init__()
 
         self.cmd_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,8 +25,6 @@ class CmdServer(QThread):
         self.ex_speed = 0
         self.model = model
 
-
-
     def run(self):
         print("waiting cmd_client")
         self.conn, addr = self.cmd_server.accept()
@@ -38,16 +34,17 @@ class CmdServer(QThread):
 
     @pyqtSlot(np.ndarray)
     def send_cmd(self, image):
+        threading.Thread(target=self.predict_steering, args=("test",image)).start()
+
+    def predict_steering(self, str, image):
         x_data = self.make_x_data(image)
         try:
             result = self.model.predict(x_data)
             print(result[0])
             self.change_predict_steering_label.emit(result[0], "red")
-            #self.conn.send(str(result[0]).encode())
+            # self.conn.send(str(result[0]).encode())
         except Exception as e:
             print(e)
-
-
 
     def recv_cmd(self):
         while self.flag:
