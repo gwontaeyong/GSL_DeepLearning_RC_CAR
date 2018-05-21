@@ -186,7 +186,7 @@ sess = tf.Session()
 m1 = Model(sess, "m1")
 
 # 저장된 학습 데이터 불러오기
-#  restore(세션, 파일경로)
+# restore(세션, 파일경로)
 # initializer를 주석처리한다. -> restore실행시 ckpt에 저장된 값으로 변수들을 초기화 시켜주기 때문에
 sess.run(tf.global_variables_initializer())
 s = 0
