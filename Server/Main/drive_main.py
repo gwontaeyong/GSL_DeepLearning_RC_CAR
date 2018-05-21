@@ -45,8 +45,8 @@ if __name__ == "__main__":
 
     streaming_server.changePixmap.connect(ex.setImage)
     streaming_server.predicSteering.connect(cmd_server.send_cmd)
-    cmd_server.change_steering_label.connect(ex.repaint_steering_labels)
-    cmd_server.change_speed_label.connect(ex.repaint_speed_labels)
+    cmd_server.change_rc_steering_label.connect(ex.repaint_steering_labels)
+    cmd_server.change_rc_speed_label.connect(ex.repaint_speed_labels)
 
     streaming_server.start()
     cmd_server.start()
