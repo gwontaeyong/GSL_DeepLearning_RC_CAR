@@ -1,11 +1,13 @@
 import sys
+import numpy as np
+import cv2 as cv
 
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout,
                              QApplication, QLabel,
                              QGroupBox)
 
 from PyQt5.QtGui import (QImage, QPixmap)
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 
 '''
 class for make drive_predict application
@@ -102,14 +104,15 @@ class Window_GUI(QWidget):
         self.setWindowTitle('show up the video and value')
         self.show()
 
-    @pyqtSlot(QImage)
+    @pyqtSlot(np.ndarray)
     def setImage(self, image):
-        self.image_label.setPixmap(QPixmap.fromImage(image))
+        qt_image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
+        p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
+        self.image_label.setPixmap(QPixmap.fromImage(p))
 
     @pyqtSlot(int, str)
     def repaint_rc_steering_labels(self, index, color="green"):
 
-        #print("index ", index)
         if index != self.ex_rc_steering_index:
             self.STREELING_LABLES[self.ex_rc_steering_index].setStyleSheet('QLabel { background-color:white;}')
             self.STREELING_LABLES[index].setStyleSheet('QLabel { background-color:' + color + ';}')
@@ -117,7 +120,7 @@ class Window_GUI(QWidget):
 
     @pyqtSlot(int, str)
     def repaint_rc_speed_labels(self, index, color="green"):
-        #print("index ", index)
+
         if index != self.ex_rc_speed_index:
             self.SPEED_LABELS[self.ex_rc_speed_index].setStyleSheet('QLabel { background-color:white;}')
             self.SPEED_LABELS[index].setStyleSheet('QLabel { background-color:' + color + ';}')
@@ -125,7 +128,7 @@ class Window_GUI(QWidget):
 
     @pyqtSlot(int, str)
     def repaint_predict_steering_labels(self, index, color="green"):
-        print("index ", index)
+
         if index != self.ex_predict_steering_index:
             self.PREDICT_STREELING_LABLES[self.ex_predict_steering_index].setStyleSheet('QLabel { background-color:white;}')
             self.PREDICT_STREELING_LABLES[index].setStyleSheet('QLabel { background-color:' + color + ';}')
@@ -133,7 +136,7 @@ class Window_GUI(QWidget):
 
     @pyqtSlot(int, str)
     def repaint_predict_speed_labels(self, index, color="green"):
-        #print("index_predict ", index)
+
         if index != self.ex_predict_speed_index_index:
             self.PREDICT_SPEED_LABLES[self.ex_predict_speed_index_index].setStyleSheet('QLabel { background-color:white;}')
             self.PREDICT_SPEED_LABLES[index].setStyleSheet('QLabel { background-color:' + color + ';}')

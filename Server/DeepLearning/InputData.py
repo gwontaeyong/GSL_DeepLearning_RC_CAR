@@ -4,11 +4,15 @@ import tensorflow as tf
 import sys
 
 class InputData():
-    def __init__(self, csv_file_name):
+
+    def __init__(self, csv_file_name, batch_size = 100):
         self.batch_addr = None
         self.batch_steering = None
         self.batch_speed = None
 
+        self.data_size = self.file_len(csv_file_name)
+        self.batch_size = batch_size
+        self.total_batch_size = self.data_size//self.batch_size
         self.read_data_batch(csv_file_name)
 
     def im_trim(self, img):  # 함수로 만든다
@@ -36,10 +40,17 @@ class InputData():
             exit()
         return addr, steering, speed
 
-    def read_data_batch(self, file_name, batch_size=100):
+    def read_data_batch(self, file_name):
+
         addr, steering, speed = self.read_data(file_name)
-        self.batch_addr, batch_steering, batch_speed = tf.train.batch([addr, steering, speed], batch_size=batch_size)
+        self.batch_addr, batch_steering, batch_speed = tf.train.batch([addr, steering, speed], batch_size=self.batch_size)
         self.batch_steering = tf.reshape(batch_steering, [-1, 1])
         self.batch_speed = tf.reshape(batch_speed, [-1, 1])
 
+    def file_len(self, fname):
 
+        with open(fname) as f:
+            for i, l in enumerate(f):
+                pass
+
+            return i + 1

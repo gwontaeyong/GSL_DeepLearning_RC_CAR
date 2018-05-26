@@ -16,10 +16,10 @@ if __name__ == "__main__":
     ex = Window_GUI()
 
     parser = argparse.ArgumentParser()
-
-    parser.add_argument('-shost', type=str, default=socket.gethostbyname(socket.gethostname()))
+    defalut_host = '192.168.0.5'
+    parser.add_argument('-shost', type=str, default=defalut_host)
     parser.add_argument('-sp', type=int, default="8002")
-    parser.add_argument('-chost', type=str, default=socket.gethostbyname(socket.gethostname()))
+    parser.add_argument('-chost', type=str, default=defalut_host)
     parser.add_argument('-cp', type=int, default="8001")
     parser.add_argument('-load', type=str, default="../DeepLearning/saved/sample4_1-2000")
 
@@ -32,11 +32,6 @@ if __name__ == "__main__":
     cport = FLAGS.cp
     load_path = FLAGS.load
 
-    '''
-    sess = tf.Session()
-    m1 = Model(sess, "m1")
-    m1.saver.restore(sess, load_path)
-    '''
 
     print("Compare Server Strat")
 
@@ -44,9 +39,8 @@ if __name__ == "__main__":
     cmd_server = CmdServer(chost, cport, load_path)
 
     streaming_server.changePixmap.connect(ex.setImage)
-    streaming_server.predicSteering.connect(cmd_server.send_cmd)
-    cmd_server.change_rc_steering_label.connect(ex.repaint_steering_labels)
-    cmd_server.change_rc_speed_label.connect(ex.repaint_speed_labels)
+    cmd_server.change_rc_steering_label.connect(ex.repaint_rc_steering_labels)
+    cmd_server.change_rc_speed_label.connect(ex.repaint_rc_speed_labels)
 
     streaming_server.start()
     cmd_server.start()

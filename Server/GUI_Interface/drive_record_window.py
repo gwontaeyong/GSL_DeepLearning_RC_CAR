@@ -1,11 +1,16 @@
 import sys
+import numpy as np
+import os
+import cv2 as cv
+import threading
 
+from datetime import datetime
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout,
                              QApplication, QLabel,
                              QGroupBox)
 
 from PyQt5.QtGui import (QImage, QPixmap)
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 
 '''
 class for make drive_window application
@@ -13,9 +18,10 @@ class for make drive_window application
 
 
 class Window_GUI(QWidget):
-    def __init__(self):
+    def __init__(self, path):
         super().__init__()
-
+        self.is_dir(path)
+        self.path = path
         '''
         STREELING_LABLES = Labels for rc_car's steering
         SPEED_LABELS = Labels for rc_car's speed
@@ -28,6 +34,7 @@ class Window_GUI(QWidget):
         self.image_label = None
         self.ex_steering_index = 4
         self.ex_speed_index = 0
+
 
         # initialize GUI
         self.initUI()
@@ -69,16 +76,36 @@ class Window_GUI(QWidget):
         self.show()
 
     '''
+    funtion : is dir
+    if there is no dir make new dir
+    '''
+
+    def is_dir(self, path):
+        if not os.path.isdir("./"+path+"/"):
+            os.mkdir("./"+path+"/")
+
+    '''
     setImage
     
     funtion : repaint the Image Label
     input : QImage from RC_CAR
     '''
 
-    @pyqtSlot(QImage)
+    @pyqtSlot(np.ndarray)
     def setImage(self, image):
-        self.image_label.setPixmap(QPixmap.fromImage(image))
 
+        qt_image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
+        p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
+        threading.Thread(target=self.capture_image, args=("test", image)).start()
+        self.image_label.setPixmap(QPixmap.fromImage(p))
+
+
+    def capture_image(self, str_, image):
+        cv.cvtColor(image, cv.COLOR_BGR2RGB, image)
+        get_filename = str(self.ex_steering_index) + "_" + str(self.ex_speed_index) + "_" + datetime.today().strftime(
+            "%H_%M_%S_") + ".jpg"
+        filepath = os.path.join(self.path, get_filename)
+        cv.imwrite(filepath, image)
     """
     repaint_steering_labels
     funtion : repaint steering label
@@ -87,7 +114,6 @@ class Window_GUI(QWidget):
 
     @pyqtSlot(int, str)
     def repaint_steering_labels(self, index, color="green"):
-        print("index ", index)
         if index != self.ex_steering_index:
             self.STREELING_LABLES[self.ex_steering_index].setStyleSheet('QLabel { background-color:white;}')
             self.STREELING_LABLES[index].setStyleSheet('QLabel { background-color:' + color + ';}')
@@ -101,7 +127,6 @@ class Window_GUI(QWidget):
 
     @pyqtSlot(int, str)
     def repaint_speed_labels(self, index, color="green"):
-        print("index ", index)
         if index != self.ex_speed_index:
             self.SPEED_LABELS[self.ex_speed_index].setStyleSheet('QLabel { background-color:white;}')
             self.SPEED_LABELS[index].setStyleSheet('QLabel { background-color:' + color + ';}')

@@ -1,12 +1,13 @@
 import sys
+import numpy as np
 
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout,
                              QApplication, QLabel,
                              QGroupBox)
 
 from PyQt5.QtGui import (QImage, QPixmap)
-from PyQt5.QtCore import pyqtSlot
-
+from PyQt5.QtCore import pyqtSlot, Qt
+import cv2 as cv
 '''
 class for make drive_window application
 '''
@@ -75,9 +76,11 @@ class Window_GUI(QWidget):
     input : QImage from RC_CAR
     '''
 
-    @pyqtSlot(QImage)
+    @pyqtSlot(np.ndarray)
     def setImage(self, image):
-        self.image_label.setPixmap(QPixmap.fromImage(image))
+        qt_image = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
+        p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
+        self.image_label.setPixmap(QPixmap.fromImage(p))
 
     """
     repaint_steering_labels
@@ -86,8 +89,8 @@ class Window_GUI(QWidget):
     """
 
     @pyqtSlot(int, str)
-    def repaint_steering_labels(self, index, color="green"):
-        print("index ", index)
+    def repaint_rc_steering_labels(self, index, color="green"):
+
         if index != self.ex_steering_index:
             self.STREELING_LABLES[self.ex_steering_index].setStyleSheet('QLabel { background-color:white;}')
             self.STREELING_LABLES[index].setStyleSheet('QLabel { background-color:' + color + ';}')
@@ -100,8 +103,7 @@ class Window_GUI(QWidget):
     '''
 
     @pyqtSlot(int, str)
-    def repaint_speed_labels(self, index, color="green"):
-        print("index ", index)
+    def repaint_rc_speed_labels(self, index, color="green"):
         if index != self.ex_speed_index:
             self.SPEED_LABELS[self.ex_speed_index].setStyleSheet('QLabel { background-color:white;}')
             self.SPEED_LABELS[index].setStyleSheet('QLabel { background-color:' + color + ';}')

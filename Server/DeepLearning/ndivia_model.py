@@ -102,14 +102,17 @@ class Model:
         # 저장에 관련된 saver
         # Saver()의 인자로 변수 리스트를 주면 해당 변수만 저장
         # 인자를 안주면 saver 생성 시점까지 초기화 된 변수만 저장(이 코드 위의 변수들)
+
         self.saver = tf.train.Saver()
 
+        '''
         # 정확도 기록
-        correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(self.Y, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(self.Y_one_hot, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         # accuracy summary
-        self.accuracy_summ = tf.summary.scalar("accuracy", self.accuracy)
+        self.accuracy_summ = tf.summary.scalar("accuracy", accuracy)
+        '''
 
         # 텐서보드
         # summary들을 merge 하고 파일 경로를 지정해준다
@@ -125,8 +128,16 @@ class Model:
         return self.sess.run(tf.argmax(self.logits, 1), feed_dict={self.X: x_test, self.training: training})
 
     def get_accuracy(self, x_test, y_test, training=False):
-        return self.sess.run(self.accuracy, feed_dict={self.X: x_test, self.Y: y_test, self.training: training})
+
+        correct_prediction = tf.equal(tf.argmax(self.logits, 1), tf.argmax(self.Y_one_hot, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+        predicted_value = self.predict(x_test)
+        real_value =  self.sess.run(tf.argmax(self.Y_one_hot, 1), feed_dict={self.Y: y_test, self.training: training})
+
+        return predicted_value, real_value, self.sess.run(accuracy, feed_dict={self.X: x_test, self.Y: y_test, self.training: training})
 
     def train(self, x_data, y_data, training=True):
-        return self.sess.run([self.merged_summary, self.optimizer],
+
+        return self.sess.run([self.merged_summary, self.optimizer, self.cost],
                              feed_dict={self.X: x_data, self.Y: y_data, self.training: training})

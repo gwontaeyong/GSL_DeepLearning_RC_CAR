@@ -5,12 +5,12 @@ import cv2 as cv
 import numpy as np
 import socket
 
-from PyQt5.QtCore import QThread, pyqtSignal, Qt, QCoreApplication
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtGui import QImage
 
 class StreamServer(QThread):
-    changePixmap = pyqtSignal(QImage)
-    predicSteering = pyqtSignal(np.ndarray)
+    changePixmap = pyqtSignal(np.ndarray)
+    sendImage = pyqtSignal(np.ndarray)
 
     def __init__(self, host, port):
         super().__init__()
@@ -21,7 +21,7 @@ class StreamServer(QThread):
 
     def run(self):
         try:
-            self.server_socket.listen(0)
+            self.server_socket.listen(1)
             self.connection = self.server_socket.accept()[0].makefile('rb')
 
             while True:
@@ -43,15 +43,12 @@ class StreamServer(QThread):
                 data = np.fromstring(image_stream.getvalue(), dtype=np.uint8)
 
                 cv_image = cv.imdecode(data, 1)
-                cv.cvtColor(cv_image, cv.COLOR_BGR2RGB, cv_image)
+                cv_image = cv.cvtColor(cv_image, cv.COLOR_BGR2RGB)
 
-                qt_image = QImage(cv_image.data, cv_image.shape[1], cv_image.shape[0], QImage.Format_RGB888)
-                p = qt_image.scaled(300, 500, Qt.KeepAspectRatio)
-                self.predicSteering.emit(cv_image)
-                self.changePixmap.emit(p)
+                self.sendImage.emit(cv_image)
+                self.changePixmap.emit(cv_image)
 
-                if cv.waitKey(1) & 0xFF == ord('q'):
-                    break
+
         finally:
             self.connection.close()
             self.server_socket.close()
