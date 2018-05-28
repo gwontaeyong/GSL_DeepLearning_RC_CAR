@@ -22,13 +22,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     default_host = socket.gethostbyname(socket.gethostname())
-
+    model_path = "../DeepLearning/saved/sample4/sample4_1-4000"
     default_host = "192.168.0.5"
 
     parser.add_argument('-host', type=str, default= default_host)
     parser.add_argument('-sp', type=int, default="8002")
     parser.add_argument('-cp', type=int, default="8001")
-    parser.add_argument('-load', type=str, default="../DeepLearning/saved/sample4_1-2000")
+    parser.add_argument('-load', type=str, default=model_path)
 
     FLAGS, _ = parser.parse_known_args()
     print("host = ", default_host)

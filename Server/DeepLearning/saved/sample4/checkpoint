@@ -1,0 +1,6 @@
+model_checkpoint_path: "test_model_epcho-8"
+all_model_checkpoint_paths: "test_model_epcho-4"
+all_model_checkpoint_paths: "test_model_epcho-5"
+all_model_checkpoint_paths: "test_model_epcho-6"
+all_model_checkpoint_paths: "test_model_epcho-7"
+all_model_checkpoint_paths: "test_model_epcho-8"
