@@ -23,8 +23,27 @@ def search(dirname, wr):
 
 
 if __name__=="__main__":
+<<<<<<< HEAD
     f = open('output.csv', 'w', newline='')
     wr = csv.writer(f)
     search("./Image2", wr)          # 전역변수 <-- 이미지폴더 있는 상위 폴더 주소 ex) D:\DeepLearning\2018-05-12 니까 D:/DeepLearning
                                         # Tools - Preferences - current working directory 값 잡아준대에 csv파일 저장됨..
+=======
+
+    file_dir = "csv"
+    file_name = 'track_1_2_pigure.csv'
+
+    search_dir = "Image"
+    image_dir = ""
+
+
+    file_full_name = os.path.join(file_dir, image_dir+file_name)
+    image_full_name = os.path.join(search_dir, image_dir)
+
+
+    f = open(file_full_name, 'w', newline='')
+    wr = csv.writer(f)
+
+    search(image_full_name, wr)
+>>>>>>> 534cea4... save
     f.close()

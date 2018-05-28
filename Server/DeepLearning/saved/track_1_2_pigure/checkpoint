@@ -1,0 +1,3 @@
+model_checkpoint_path: "track_1_2__pigure_sample1_epcho-4001"
+all_model_checkpoint_paths: "track_1_2__pigure_sample1_epcho_best-4001"
+all_model_checkpoint_paths: "track_1_2__pigure_sample1_epcho-4001"
